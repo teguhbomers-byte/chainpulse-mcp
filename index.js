@@ -3,13 +3,13 @@ const app = express()
 
 const PORT = process.env.PORT || 3000
 
-function buildMCP(agent){
+function mcp(agent){
  return {
-  name:agent,
-  version:"1.0.0",
-  protocolVersion:"2025-06-18",
-  description:"CoinGecko-powered crypto market analysis MCP agent",
-  transport:"streamable-http",
+  name: agent,
+  version: "1.0.0",
+  protocolVersion: "2025-06-18",
+  description: "CoinGecko-powered crypto market analysis MCP agent",
+  transport: "streamable-http",
   methods:["POST"],
   capabilities:{
    tools:true,
@@ -33,46 +33,34 @@ function buildMCP(agent){
 }
 
 /* MCP */
-
-app.get("/mcp",(req,res)=>{
- res.json(buildMCP("chainpulse-agent"))
-})
-
-app.get("/:agent/mcp",(req,res)=>{
- res.json(buildMCP(req.params.agent))
-})
+app.get("/mcp",(req,res)=>res.json(mcp("chainpulse-agent")))
+app.get("/agent-:id/mcp",(req,res)=>res.json(mcp("chainpulse-agent-"+req.params.id)))
 
 /* A2A */
-
-function buildA2A(agent){
- return {
-  name:agent,
-  protocolVersion:"0.3.0",
-  description:"Crypto analysis agent",
-  defaultInputModes:["text"],
-  defaultOutputModes:["text"],
-  skills:[
-   {id:"crypto-overview",name:"Crypto Overview"},
-   {id:"trending",name:"Trending Coins"},
-   {id:"defi",name:"DeFi Statistics"},
-   {id:"analysis",name:"Coin Analysis"}
-  ],
-  status:"active"
- }
-}
-
 app.get("/a2a",(req,res)=>{
- res.json(buildA2A("chainpulse-agent"))
+ res.json({
+  name:"chainpulse-agent",
+  protocolVersion:"0.3.0",
+  skills:[
+   {id:"crypto-overview"},
+   {id:"trending"},
+   {id:"defi"},
+   {id:"analysis"}
+  ]
+ })
 })
 
-app.get("/:agent/a2a",(req,res)=>{
- res.json(buildA2A(req.params.agent))
+app.get("/agent-:id/a2a",(req,res)=>{
+ res.json({
+  name:"chainpulse-agent-"+req.params.id,
+  protocolVersion:"0.3.0",
+  skills:[
+   {id:"crypto-overview"},
+   {id:"trending"},
+   {id:"defi"},
+   {id:"analysis"}
+  ]
+ })
 })
 
-app.get("/",(req,res)=>{
- res.json({status:"server running"})
-})
-
-app.listen(PORT,()=>{
- console.log("Server running "+PORT)
-})
+app.listen(PORT,()=>console.log("server running "+PORT))
