@@ -7,14 +7,12 @@ const PORT = process.env.PORT || 3000
 
 
 /* =========================
-   MCP ENDPOINT
+   MCP RESPONSE BUILDER
 ========================= */
 
-app.get("/:agent/mcp",(req,res)=>{
+function buildMCP(agent){
 
- const agent = req.params.agent
-
- res.json({
+ return {
 
   name:agent,
 
@@ -26,7 +24,7 @@ app.get("/:agent/mcp",(req,res)=>{
 
   transport:"streamable-http",
 
-  methods:["POST"],
+  methods:["GET","POST"],
 
   capabilities:{
    tools:true,
@@ -35,13 +33,34 @@ app.get("/:agent/mcp",(req,res)=>{
   },
 
   tools:[
-   "get_crypto_price",
-   "get_market_overview",
-   "get_trending_coins",
-   "get_top_coins",
-   "get_coin_info",
-   "get_defi_stats",
-   "get_market_sentiment"
+   {
+    name:"get_crypto_price",
+    description:"Get cryptocurrency price"
+   },
+   {
+    name:"get_market_overview",
+    description:"Analyze crypto market overview"
+   },
+   {
+    name:"get_trending_coins",
+    description:"List trending cryptocurrencies"
+   },
+   {
+    name:"get_top_coins",
+    description:"Top market cap coins"
+   },
+   {
+    name:"get_coin_info",
+    description:"Detailed coin data"
+   },
+   {
+    name:"get_defi_stats",
+    description:"DeFi ecosystem statistics"
+   },
+   {
+    name:"get_market_sentiment",
+    description:"Crypto market sentiment index"
+   }
   ],
 
   prompts:[
@@ -51,8 +70,29 @@ app.get("/:agent/mcp",(req,res)=>{
 
   status:"healthy"
 
- })
+ }
 
+}
+
+
+/* =========================
+   MCP ENDPOINTS
+========================= */
+
+app.get("/mcp",(req,res)=>{
+ res.json(buildMCP("default-agent"))
+})
+
+app.get("/:agent/mcp",(req,res)=>{
+ res.json(buildMCP(req.params.agent))
+})
+
+app.post("/mcp",(req,res)=>{
+ res.json(buildMCP("default-agent"))
+})
+
+app.post("/:agent/mcp",(req,res)=>{
+ res.json(buildMCP(req.params.agent))
 })
 
 
@@ -65,73 +105,45 @@ app.post("/:agent/tools",(req,res)=>{
  const tool = req.body.tool
 
  if(tool==="get_crypto_price"){
-  return res.json({
-   tool,
-   result:"BTC price $68000"
-  })
+  return res.json({tool,result:"BTC price $68000"})
  }
 
  if(tool==="get_market_overview"){
-  return res.json({
-   tool,
-   result:"Global crypto market slightly bullish"
-  })
+  return res.json({tool,result:"Market slightly bullish"})
  }
 
  if(tool==="get_trending_coins"){
-  return res.json({
-   tool,
-   coins:["BTC","ETH","SOL"]
-  })
+  return res.json({tool,coins:["BTC","ETH","SOL"]})
  }
 
  if(tool==="get_top_coins"){
-  return res.json({
-   tool,
-   coins:["BTC","ETH","BNB"]
-  })
+  return res.json({tool,coins:["BTC","ETH","BNB"]})
  }
 
  if(tool==="get_coin_info"){
-  return res.json({
-   tool,
-   coin:"BTC",
-   marketCap:"1.2T",
-   ath:"$69000"
-  })
+  return res.json({tool,coin:"BTC",marketCap:"1.2T"})
  }
 
  if(tool==="get_defi_stats"){
-  return res.json({
-   tool,
-   tvl:"$95B"
-  })
+  return res.json({tool,tvl:"$95B"})
  }
 
  if(tool==="get_market_sentiment"){
-  return res.json({
-   tool,
-   sentiment:"Bullish",
-   score:72
-  })
+  return res.json({tool,sentiment:"Bullish"})
  }
 
- res.json({
-  error:"Unknown tool"
- })
+ res.json({error:"Unknown tool"})
 
 })
 
 
 /* =========================
-   A2A DISCOVERY (GET)
+   A2A BUILDER
 ========================= */
 
-app.get("/:agent/a2a",(req,res)=>{
+function buildA2A(agent){
 
- const agent = req.params.agent
-
- res.json({
+ return {
 
   name:agent,
 
@@ -151,53 +163,64 @@ app.get("/:agent/a2a",(req,res)=>{
    {
     id:"crypto-overview",
     name:"Crypto Overview",
-    description:"Get global crypto market stats including market cap and trends"
+    description:"Global crypto market overview"
    },
    {
     id:"trending",
     name:"Trending Coins",
-    description:"Top trending cryptocurrencies in last 24 hours"
+    description:"Top trending cryptocurrencies"
    },
    {
-    id:"defi-stats",
+    id:"defi",
     name:"DeFi Statistics",
-    description:"DeFi market cap, TVL and ecosystem data"
+    description:"DeFi market statistics"
    },
    {
-    id:"coin-analysis",
+    id:"analysis",
     name:"Coin Analysis",
-    description:"Detailed token data including price, ATH, supply"
+    description:"Detailed token analysis"
    }
   ],
 
   status:"active"
 
- })
+ }
 
+}
+
+
+/* =========================
+   A2A ENDPOINTS
+========================= */
+
+app.get("/a2a",(req,res)=>{
+ res.json(buildA2A("default-agent"))
+})
+
+app.get("/:agent/a2a",(req,res)=>{
+ res.json(buildA2A(req.params.agent))
+})
+
+app.post("/a2a",(req,res)=>{
+ res.json({status:"active"})
+})
+
+app.post("/:agent/a2a",(req,res)=>{
+ res.json({
+  agent:req.params.agent,
+  received:req.body,
+  response:"A2A communication successful",
+  status:"active"
+ })
 })
 
 
 /* =========================
-   A2A COMMUNICATION (POST)
+   HEALTH CHECK
 ========================= */
 
-app.post("/:agent/a2a",(req,res)=>{
-
- const agent = req.params.agent
- const body = req.body
-
- res.json({
-
-  agent:agent,
-
-  received:body,
-
-  response:"A2A communication successful",
-
-  status:"active"
-
- })
-
+app.get("/",(req,res)=>{
+ res.json({status:"server running"})
 })
 
 
