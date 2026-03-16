@@ -1,12 +1,11 @@
 {
-  "name": "chainpulse-mcp",
-  "version": "1.0.0",
-  "description": "ChainPulse MCP multi-agent server",
-  "main": "index.js",
-  "scripts": {
-    "start": "node index.js"
-  },
-  "dependencies": {
-    "express": "^4.19.2"
-  }
+ "name": "chainpulse-mcp",
+ "version": "1.0.0",
+ "main": "index.js",
+ "scripts": {
+  "start": "node index.js"
+ },
+ "dependencies": {
+  "express": "^4.19.2"
+ }
 }
