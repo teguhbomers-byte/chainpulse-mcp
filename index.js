@@ -5,101 +5,27 @@ const PORT = process.env.PORT || 3000
 
 app.use(express.json())
 
-
 /* =========================
-   DATA MCP
+   DATA
 ========================= */
 
 const tools = [
-
- {
-  name:"get_crypto_price",
-  description:"Get the current USD price and 24h change for cryptocurrencies."
- },
-
- {
-  name:"get_market_overview",
-  description:"Get global crypto market stats including market cap and BTC dominance."
- },
-
- {
-  name:"get_trending_coins",
-  description:"Get top trending cryptocurrencies on CoinGecko."
- },
-
- {
-  name:"get_top_coins",
-  description:"Top coins ranked by market cap."
- },
-
- {
-  name:"get_coin_info",
-  description:"Detailed information about a specific cryptocurrency."
- },
-
- {
-  name:"get_defi_stats",
-  description:"DeFi ecosystem statistics including TVL."
- }
-
+ {name:"get_crypto_price",description:"Get current crypto price"},
+ {name:"get_market_overview",description:"Global crypto market overview"},
+ {name:"get_trending_coins",description:"Top trending cryptocurrencies"},
+ {name:"get_top_coins",description:"Top market cap coins"},
+ {name:"get_coin_info",description:"Detailed coin information"},
+ {name:"get_defi_stats",description:"DeFi ecosystem statistics"}
 ]
-
 
 const prompts = [
-
- {
-  name:"market_briefing",
-  description:"Generate a crypto market briefing."
- },
-
- {
-  name:"coin_analysis",
-  description:"Analyze cryptocurrency fundamentals."
- }
-
+ {name:"market_briefing",description:"Generate crypto market briefing"},
+ {name:"coin_analysis",description:"Analyze cryptocurrency fundamentals"}
 ]
-
 
 const resources = [
-
- {
-  name:"coingecko-api",
-  description:"Public crypto market data source."
- }
-
+ {name:"coingecko-api",description:"Public crypto market data"}
 ]
-
-
-
-/* =========================
-   MCP ENDPOINT
-========================= */
-
-app.post("/mcp",(req,res)=>{
-
- const method = req.body?.method
-
- if(method === "tools/list"){
-
-  return res.json({tools})
-
- }
-
- if(method === "prompts/list"){
-
-  return res.json({prompts})
-
- }
-
- if(method === "resources/list"){
-
-  return res.json({resources})
-
- }
-
- return res.json({status:"ok"})
-
-})
 
 
 /* =========================
@@ -109,25 +35,52 @@ app.post("/mcp",(req,res)=>{
 app.get("/mcp",(req,res)=>{
 
  res.json({
-
   name:"chainpulse-agent",
-
   version:"1.0.0",
-
   protocolVersion:"2025-06-18",
-
   description:"CoinGecko-powered crypto market analysis agent",
-
   transport:"streamable-http",
-
-  methods:["POST"],
-
+  methods:["GET","POST"],
+  capabilities:{
+   tools:true,
+   prompts:true,
+   resources:true
+  },
   status:"healthy"
-
  })
 
 })
 
+
+/* =========================
+   MCP RPC
+========================= */
+
+app.post("/mcp",(req,res)=>{
+
+ const method = req.body?.method
+
+ if(method==="tools/list"){
+
+  return res.json({tools})
+
+ }
+
+ if(method==="prompts/list"){
+
+  return res.json({prompts})
+
+ }
+
+ if(method==="resources/list"){
+
+  return res.json({resources})
+
+ }
+
+ res.json({status:"ok"})
+
+})
 
 
 /* =========================
@@ -161,13 +114,13 @@ app.get("/a2a",(req,res)=>{
    {
     id:"defi_stats",
     name:"DeFi Statistics",
-    description:"DeFi market metrics"
+    description:"DeFi ecosystem statistics"
    },
 
    {
     id:"coin_analysis",
     name:"Coin Analysis",
-    description:"Detailed crypto analysis"
+    description:"Detailed cryptocurrency analysis"
    }
 
   ],
@@ -177,7 +130,6 @@ app.get("/a2a",(req,res)=>{
  })
 
 })
-
 
 
 /* =========================
@@ -190,6 +142,10 @@ app.get("/",(req,res)=>{
 
 })
 
+
+/* =========================
+   START SERVER
+========================= */
 
 app.listen(PORT,()=>{
 
