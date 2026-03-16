@@ -89,7 +89,7 @@ app.post("/:agent/tools/:tool",(req,res)=>{
 
 /* A2A communication */
 
-app.post("/:agent/a2a",(req,res)=>{
+app.all("/:agent/a2a",(req,res)=>{
 
   const agentName = req.params.agent
   const body = req.body
