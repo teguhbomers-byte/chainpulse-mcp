@@ -15,21 +15,21 @@ function buildMCP(agent){
 
  return {
 
-  name:agent,
+  name: agent,
 
-  description:"CoinGecko-powered crypto market analysis agent",
+  description: "CoinGecko-powered crypto market analysis agent",
 
-  protocolVersion:"2025-06-18",
+  protocolVersion: "2025-06-18",
 
-  transport:"streamable-http",
+  transport: "streamable-http",
 
-  methods:["GET","POST"],
+  methods: ["GET","POST"],
 
-  defaultInputModes:["text"],
+  defaultInputModes: ["text"],
 
-  defaultOutputModes:["text"],
+  defaultOutputModes: ["text"],
 
-  tools:[
+  tools: [
    {id:"get_crypto_price",name:"Get Crypto Price",description:"Get cryptocurrency price"},
    {id:"get_market_overview",name:"Market Overview",description:"Crypto market overview"},
    {id:"get_trending_coins",name:"Trending Coins",description:"Trending cryptocurrencies"},
@@ -38,12 +38,12 @@ function buildMCP(agent){
    {id:"get_defi_stats",name:"DeFi Stats",description:"DeFi market statistics"}
   ],
 
-  prompts:[
+  prompts: [
    "market_briefing",
    "coin_analysis"
   ],
 
-  status:"healthy"
+  status: "healthy"
 
  }
 
@@ -53,6 +53,10 @@ function buildMCP(agent){
 /* =========================
    MCP ENDPOINT
 ========================= */
+
+app.get("/mcp",(req,res)=>{
+ res.json(buildMCP("chainpulse-agent"))
+})
 
 app.get("/:agent/mcp",(req,res)=>{
  res.json(buildMCP(req.params.agent))
@@ -67,24 +71,24 @@ function buildA2A(agent){
 
  return {
 
-  name:agent,
+  name: agent,
 
-  protocolVersion:"0.3.0",
+  protocolVersion: "0.3.0",
 
-  description:"Crypto analysis agent",
+  description: "Crypto analysis agent",
 
-  defaultInputModes:["text"],
+  defaultInputModes: ["text"],
 
-  defaultOutputModes:["text"],
+  defaultOutputModes: ["text"],
 
-  skills:[
+  skills: [
    {id:"crypto-overview",name:"Crypto Overview",description:"Global crypto market overview"},
    {id:"trending",name:"Trending Coins",description:"Top trending coins"},
    {id:"defi",name:"DeFi Statistics",description:"DeFi ecosystem stats"},
    {id:"analysis",name:"Coin Analysis",description:"Detailed coin analysis"}
   ],
 
-  status:"active"
+  status: "active"
 
  }
 
@@ -94,6 +98,10 @@ function buildA2A(agent){
 /* =========================
    A2A ENDPOINT
 ========================= */
+
+app.get("/a2a",(req,res)=>{
+ res.json(buildA2A("chainpulse-agent"))
+})
 
 app.get("/:agent/a2a",(req,res)=>{
  res.json(buildA2A(req.params.agent))
@@ -109,6 +117,10 @@ app.get("/",(req,res)=>{
 })
 
 
+/* =========================
+   SERVER START
+========================= */
+
 app.listen(PORT,()=>{
- console.log("Server running on port "+PORT)
+ console.log("Server running on port " + PORT)
 })
