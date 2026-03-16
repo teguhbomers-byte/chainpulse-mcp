@@ -3,13 +3,13 @@ import express from "express";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.get("/health", (req,res)=>{
+app.get("/health",(req,res)=>{
   res.json({status:"ok"});
 });
 
-app.get("/mcp",(req,res)=>{
-  res.json({
-    name:"chainpulse-agent",
+function createAgent(name){
+  return {
+    name:name,
     version:"1.0.0",
     protocolVersion:"2025-06-18",
     description:"AI blockchain analytics agent",
@@ -21,19 +21,24 @@ app.get("/mcp",(req,res)=>{
       resources:true
     },
     tools:[
-      "get_wallet_risk",
       "analyze_token",
+      "wallet_risk",
       "detect_scam",
       "chain_activity"
     ],
     prompts:[
-      "wallet_analysis",
-      "token_risk_report"
+      "token_analysis",
+      "wallet_report"
     ],
     status:"healthy"
-  });
-});
+  }
+}
+
+app.get("/:agent/mcp",(req,res)=>{
+  const agentName = req.params.agent
+  res.json(createAgent(agentName))
+})
 
 app.listen(PORT,()=>{
-  console.log("MCP running");
-});
+  console.log("Dynamic MCP running")
+})
