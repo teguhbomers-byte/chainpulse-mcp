@@ -7,7 +7,7 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// MCP metadata – PERSIS seperti contoh aman (array string untuk tools & prompts)
+// MCP metadata – PERSIS seperti contoh aman yang tools kebaca
 function getMCPMetadata(agentName = "repustream-agent-1001") {
   return {
     name: agentName,
@@ -37,17 +37,21 @@ function getMCPMetadata(agentName = "repustream-agent-1001") {
   };
 }
 
-// MCP endpoint – PERSIS seperti contoh aman: /mcp/:agent
+// Tambahan route MCP yang persis seperti contoh aman
 app.get("/mcp/:agent", (req, res) => {
   res.json(getMCPMetadata(req.params.agent));
 });
 
-// Fallback root kalau di-test root
+// Fallback root dan /mcp (biar kalau Ududxpro nyoba path ini, tools kebaca)
 app.get("/", (req, res) => {
-  res.json(getMCPMetadata());
+  res.json(getMCPMetadata("repustream-agent-1001"));
 });
 
-// A2A endpoint – PERSIS seperti contoh aman (path /agents/:agent/.well-known/agent-card.json)
+app.get("/mcp", (req, res) => {
+  res.json(getMCPMetadata("repustream-agent-1001"));
+});
+
+// A2A metadata – PERTHAHANKAN yang sudah aman (skills 5 terbaca)
 function getAgentCard(agentName = "RepuStream agent-1001") {
   return {
     name: agentName,
@@ -84,12 +88,12 @@ app.get("/agents/:agent/.well-known/agent-card.json", (req, res) => {
   res.json(getAgentCard(req.params.agent));
 });
 
-// POST tool call (minimal, biar bisa execute kalau dibutuhin)
+// POST tool call untuk MCP
 app.post("/mcp/:agent", (req, res) => {
   res.json({ status: "success", message: "Tool call processed" });
 });
 
-// Health
+// Health check
 app.get("/health", (req, res) => {
   res.json({ status: "healthy" });
 });
