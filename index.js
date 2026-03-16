@@ -1,103 +1,163 @@
-const express = require("express");
-const cors = require("cors");
+const express = require("express")
 
-const app = express();
-const PORT = process.env.PORT || 3000;
+const app = express()
 
-app.use(cors());
-app.use(express.json());
+const PORT = process.env.PORT || 3000
 
-// MCP metadata – PERSIS seperti contoh aman yang tools kebaca
-function getMCPMetadata(agentName = "repustream-agent-1001") {
-  return {
-    name: agentName,
-    version: "1.0.0",
-    protocolVersion: "2025-06-18",
-    description: "CoinGecko-powered crypto market analysis MCP agent",
-    transport: "streamable-http",
-    methods: ["POST"],
-    capabilities: {
-      tools: true,
-      prompts: true,
-      resources: true
-    },
-    tools: [
-      "get_crypto_price",
-      "get_market_overview",
-      "get_trending_coins",
-      "get_top_coins",
-      "get_coin_info",
-      "get_defi_stats"
-    ],
-    prompts: [
-      "market_briefing",
-      "coin_analysis"
-    ],
-    status: "healthy"
-  };
+app.use(express.json())
+
+
+/* =========================
+   MCP BUILDER
+========================= */
+
+function buildMCP(agent){
+
+ return {
+
+  name: agent,
+
+  version: "1.0.0",
+
+  protocolVersion: "2025-06-18",
+
+  description: "CoinGecko-powered crypto market analysis MCP agent",
+
+  transport: "streamable-http",
+
+  methods: ["GET","POST"],
+
+  defaultInputModes: ["text"],
+
+  defaultOutputModes: ["text"],
+
+  tools: [
+
+   { id:"get_crypto_price", name:"Get Crypto Price", description:"Get real-time cryptocurrency price" },
+
+   { id:"get_market_overview", name:"Market Overview", description:"Analyze crypto market overview" },
+
+   { id:"get_trending_coins", name:"Trending Coins", description:"List trending cryptocurrencies" },
+
+   { id:"get_top_coins", name:"Top Coins", description:"Top market cap coins" },
+
+   { id:"get_coin_info", name:"Coin Info", description:"Detailed coin data" },
+
+   { id:"get_defi_stats", name:"DeFi Stats", description:"DeFi ecosystem statistics" }
+
+  ],
+
+  prompts: [
+
+   "market_briefing",
+
+   "coin_analysis"
+
+  ],
+
+  resources: [],
+
+  status: "healthy"
+
+ }
+
 }
 
-// Tambahan route MCP yang persis seperti contoh aman
-app.get("/mcp/:agent", (req, res) => {
-  res.json(getMCPMetadata(req.params.agent));
-});
 
-// Fallback root dan /mcp (biar kalau Ududxpro nyoba path ini, tools kebaca)
-app.get("/", (req, res) => {
-  res.json(getMCPMetadata("repustream-agent-1001"));
-});
+/* =========================
+   MCP ENDPOINTS
+========================= */
 
-app.get("/mcp", (req, res) => {
-  res.json(getMCPMetadata("repustream-agent-1001"));
-});
+app.get("/mcp",(req,res)=>{
+ res.json(buildMCP("chainpulse-agent"))
+})
 
-// A2A metadata – PERTHAHANKAN yang sudah aman (skills 5 terbaca)
-function getAgentCard(agentName = "RepuStream agent-1001") {
-  return {
-    name: agentName,
-    description: "CoinGecko-powered crypto market analysis agent. Provides real-time price data, market overviews, trending coins, DeFi statistics, and detailed coin analysis.",
-    url: `https://chainpulse-mcp-production.up.railway.app/mcp/${agentName.toLowerCase().replace(/\s+/g, '-')}`,
-    version: "1.0.0",
-    capabilities: {
-      tools: [
-        { name: "get_crypto_price", description: "Get the current USD price and 24h change for one or more cryptocurrencies." },
-        { name: "get_market_overview", description: "Get global crypto market stats: total market cap, BTC dominance, active coins." },
-        { name: "get_trending_coins", description: "Get the top trending cryptocurrencies on CoinGecko in the last 24 hours." },
-        { name: "get_top_coins", description: "Get top coins ranked by market cap with price, volume, and 24h change." },
-        { name: "get_coin_info", description: "Get detailed information about a specific coin: description, links, ATH, supply." },
-        { name: "get_defi_stats", description: "Get DeFi market statistics: total DeFi market cap and DeFi dominance." }
-      ],
-      prompts: [
-        { name: "market_briefing", description: "Generate a concise crypto market briefing using live CoinGecko data." },
-        { name: "coin_analysis", description: "Produce a structured analysis of a specific coin using its live metrics." }
-      ]
-    },
-    defaultInputModes: ["text"],
-    defaultOutputModes: ["text"],
-    skills: [
-      { id: "crypto-price", name: "Crypto Price Lookup", description: "Get current USD price and 24h change for cryptocurrencies" },
-      { id: "market-overview", name: "Market Overview", description: "Global crypto market stats including market cap and dominance" },
-      { id: "trending", name: "Trending Coins", description: "Top trending cryptocurrencies in the last 24 hours" },
-      { id: "defi-stats", name: "DeFi Statistics", description: "DeFi market cap, dominance, and top DeFi coins" },
-      { id: "coin-analysis", name: "Coin Analysis", description: "Detailed coin info including ATH, supply, and market data" }
-    ]
-  };
+app.post("/mcp",(req,res)=>{
+ res.json(buildMCP("chainpulse-agent"))
+})
+
+app.get("/:agent/mcp",(req,res)=>{
+ res.json(buildMCP(req.params.agent))
+})
+
+app.post("/:agent/mcp",(req,res)=>{
+ res.json(buildMCP(req.params.agent))
+})
+
+
+/* =========================
+   A2A BUILDER
+========================= */
+
+function buildA2A(agent){
+
+ return {
+
+  name: agent,
+
+  protocolVersion: "0.3.0",
+
+  description: "Crypto analysis agent",
+
+  defaultInputModes: ["text"],
+
+  defaultOutputModes: ["text"],
+
+  skills: [
+
+   { id:"crypto-overview", name:"Crypto Overview", description:"Global crypto market overview" },
+
+   { id:"trending", name:"Trending Coins", description:"Top trending cryptocurrencies" },
+
+   { id:"defi", name:"DeFi Statistics", description:"DeFi market statistics" },
+
+   { id:"analysis", name:"Coin Analysis", description:"Detailed coin analysis" }
+
+  ],
+
+  status: "active"
+
+ }
+
 }
 
-app.get("/agents/:agent/.well-known/agent-card.json", (req, res) => {
-  res.json(getAgentCard(req.params.agent));
-});
 
-// POST tool call untuk MCP
-app.post("/mcp/:agent", (req, res) => {
-  res.json({ status: "success", message: "Tool call processed" });
-});
+/* =========================
+   A2A ENDPOINTS
+========================= */
 
-// Health check
-app.get("/health", (req, res) => {
-  res.json({ status: "healthy" });
-});
+app.get("/a2a",(req,res)=>{
+ res.json(buildA2A("chainpulse-agent"))
+})
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+app.get("/:agent/a2a",(req,res)=>{
+ res.json(buildA2A(req.params.agent))
+})
+
+app.post("/:agent/a2a",(req,res)=>{
+ res.json({
+  agent: req.params.agent,
+  status: "active",
+  response: "A2A communication successful"
+ })
+})
+
+
+/* =========================
+   ROOT
+========================= */
+
+app.get("/",(req,res)=>{
+ res.json({status:"ChainPulse MCP server running"})
+})
+
+
+/* =========================
+   START SERVER
+========================= */
+
+app.listen(PORT,()=>{
+
+ console.log("ChainPulse MCP server running on port " + PORT)
+
+})
