@@ -17,6 +17,7 @@ app.get("/:agent/mcp",(req,res)=>{
  res.json({
 
   name:agent,
+
   version:"1.0.0",
 
   protocolVersion:"2025-06-18",
@@ -113,7 +114,36 @@ app.post("/:agent/tools",(req,res)=>{
 
 
 /* =========================
-   A2A ENDPOINT
+   A2A DISCOVERY (GET)
+========================= */
+
+app.get("/:agent/a2a",(req,res)=>{
+
+ const agent = req.params.agent
+
+ res.json({
+
+  name:agent,
+
+  protocolVersion:"0.3.0",
+
+  description:"Agent to agent communication endpoint",
+
+  skills:[
+   "agent_collaboration",
+   "task_execution",
+   "data_exchange"
+  ],
+
+  status:"active"
+
+ })
+
+})
+
+
+/* =========================
+   A2A COMMUNICATION (POST)
 ========================= */
 
 app.post("/:agent/a2a",(req,res)=>{
@@ -121,9 +151,13 @@ app.post("/:agent/a2a",(req,res)=>{
  const agent = req.params.agent
 
  res.json({
+
   agent:agent,
+
   status:"active",
+
   response:"A2A communication successful"
+
  })
 
 })
@@ -135,6 +169,6 @@ app.post("/:agent/a2a",(req,res)=>{
 
 app.listen(PORT,()=>{
 
- console.log("MCP + Tools + A2A running")
+ console.log("MCP + Tools + A2A server running")
 
 })
