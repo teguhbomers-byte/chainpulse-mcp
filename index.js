@@ -40,7 +40,8 @@ app.get("/:agent/mcp",(req,res)=>{
    "get_trending_coins",
    "get_top_coins",
    "get_coin_info",
-   "get_defi_stats"
+   "get_defi_stats",
+   "get_market_sentiment"
   ],
 
   prompts:[
@@ -73,7 +74,7 @@ app.post("/:agent/tools",(req,res)=>{
  if(tool==="get_market_overview"){
   return res.json({
    tool,
-   result:"Market slightly bullish"
+   result:"Global crypto market slightly bullish"
   })
  }
 
@@ -95,7 +96,8 @@ app.post("/:agent/tools",(req,res)=>{
   return res.json({
    tool,
    coin:"BTC",
-   marketCap:"1.2T"
+   marketCap:"1.2T",
+   ath:"$69000"
   })
  }
 
@@ -103,6 +105,14 @@ app.post("/:agent/tools",(req,res)=>{
   return res.json({
    tool,
    tvl:"$95B"
+  })
+ }
+
+ if(tool==="get_market_sentiment"){
+  return res.json({
+   tool,
+   sentiment:"Bullish",
+   score:72
   })
  }
 
@@ -125,29 +135,33 @@ app.get("/:agent/a2a",(req,res)=>{
 
   name:agent,
 
-  protocolVersion:"0.3.0",
+  description:"Crypto market analysis agent",
 
-  description:"Multi-agent collaboration endpoint",
+  protocolVersion:"0.3.0",
 
   defaultInputModes:["text"],
 
   defaultOutputModes:["text"],
 
+  capabilities:{
+   streaming:false
+  },
+
   skills:[
    {
     id:"crypto-overview",
     name:"Crypto Overview",
-    description:"Get market overview including market cap and trends"
+    description:"Get global crypto market stats including market cap and trends"
    },
    {
-    id:"trending-coins",
+    id:"trending",
     name:"Trending Coins",
-    description:"Top trending cryptocurrencies in last 24h"
+    description:"Top trending cryptocurrencies in last 24 hours"
    },
    {
     id:"defi-stats",
     name:"DeFi Statistics",
-    description:"DeFi market cap, TVL, and ecosystem data"
+    description:"DeFi market cap, TVL and ecosystem data"
    },
    {
     id:"coin-analysis",
@@ -170,14 +184,17 @@ app.get("/:agent/a2a",(req,res)=>{
 app.post("/:agent/a2a",(req,res)=>{
 
  const agent = req.params.agent
+ const body = req.body
 
  res.json({
 
   agent:agent,
 
-  status:"active",
+  received:body,
 
-  response:"A2A communication successful"
+  response:"A2A communication successful",
+
+  status:"active"
 
  })
 
