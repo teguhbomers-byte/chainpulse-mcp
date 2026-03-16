@@ -7,8 +7,8 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// MCP metadata – persis seperti contoh aman (tools & prompts array string)
-function getMCP(agentName = "repustream-agent-1001") {
+// MCP metadata – PERSIS seperti contoh aman (array string untuk tools & prompts)
+function getMCPMetadata(agentName = "repustream-agent-1001") {
   return {
     name: agentName,
     version: "1.0.0",
@@ -37,17 +37,17 @@ function getMCP(agentName = "repustream-agent-1001") {
   };
 }
 
-// Endpoint MCP persis seperti contoh: /mcp/:agent
+// MCP endpoint – PERSIS seperti contoh aman: /mcp/:agent
 app.get("/mcp/:agent", (req, res) => {
-  res.json(getMCP(req.params.agent));
+  res.json(getMCPMetadata(req.params.agent));
 });
 
 // Fallback root kalau di-test root
 app.get("/", (req, res) => {
-  res.json(getMCP());
+  res.json(getMCPMetadata());
 });
 
-// A2A metadata – persis seperti .well-known/agent-card.json
+// A2A endpoint – PERSIS seperti contoh aman (path /agents/:agent/.well-known/agent-card.json)
 function getAgentCard(agentName = "RepuStream agent-1001") {
   return {
     name: agentName,
@@ -80,12 +80,11 @@ function getAgentCard(agentName = "RepuStream agent-1001") {
   };
 }
 
-// Endpoint A2A persis: /agents/:agent/.well-known/agent-card.json
 app.get("/agents/:agent/.well-known/agent-card.json", (req, res) => {
   res.json(getAgentCard(req.params.agent));
 });
 
-// POST MCP tool call (minimal)
+// POST tool call (minimal, biar bisa execute kalau dibutuhin)
 app.post("/mcp/:agent", (req, res) => {
   res.json({ status: "success", message: "Tool call processed" });
 });
