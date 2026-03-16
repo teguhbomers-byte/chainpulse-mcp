@@ -3,9 +3,9 @@ const app = express()
 
 const PORT = process.env.PORT || 3000
 
-function buildMCP(agentId){
+function buildMCP(id){
  return {
-  name:"repustream-agent-"+agentId,
+  name:"repustream-agent-"+id,
   version:"1.0.0",
   protocolVersion:"2025-06-18",
   description:"CoinGecko-powered crypto market analysis MCP agent",
@@ -32,35 +32,27 @@ function buildMCP(agentId){
  }
 }
 
-/* MCP */
-app.get("/agent-:id/mcp",(req,res)=>{
- const id = req.params.id
+/* MCP (UNIVERSAL) */
+app.get("/mcp",(req,res)=>{
+ const id = req.query.agent || "1"
  res.json(buildMCP(id))
 })
 
-/* A2A */
-app.get("/agent-:id/a2a",(req,res)=>{
- const id = req.params.id
+/* A2A (UNIVERSAL) */
+app.get("/a2a",(req,res)=>{
+ const id = req.query.agent || "1"
+
  res.json({
   name:"repustream-agent-"+id,
   protocolVersion:"0.3.0",
   description:"Crypto analysis agent",
-  defaultInputModes:["text"],
-  defaultOutputModes:["text"],
   skills:[
-   {id:"crypto-overview",name:"Crypto Overview"},
-   {id:"trending",name:"Trending Coins"},
-   {id:"defi",name:"DeFi Statistics"},
-   {id:"analysis",name:"Coin Analysis"}
-  ],
-  status:"active"
+   {id:"crypto-overview"},
+   {id:"trending"},
+   {id:"defi"},
+   {id:"analysis"}
+  ]
  })
 })
 
-app.get("/",(req,res)=>{
- res.json({status:"server running"})
-})
-
-app.listen(PORT,()=>{
- console.log("server running on "+PORT)
-})
+app.listen(PORT,()=>console.log("running "+PORT))
