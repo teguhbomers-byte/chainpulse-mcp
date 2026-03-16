@@ -3,9 +3,10 @@ const app = express()
 
 const PORT = process.env.PORT || 3000
 
-function buildMCP(id){
- return {
-  name:"repustream-agent-"+id,
+/* MCP */
+app.get("/mcp",(req,res)=>{
+ res.json({
+  name:"repustream-agent-1",
   version:"1.0.0",
   protocolVersion:"2025-06-18",
   description:"CoinGecko-powered crypto market analysis MCP agent",
@@ -29,21 +30,13 @@ function buildMCP(id){
    "coin_analysis"
   ],
   status:"healthy"
- }
-}
-
-/* MCP (UNIVERSAL) */
-app.get("/mcp",(req,res)=>{
- const id = req.query.agent || "1"
- res.json(buildMCP(id))
+ })
 })
 
-/* A2A (UNIVERSAL) */
+/* A2A */
 app.get("/a2a",(req,res)=>{
- const id = req.query.agent || "1"
-
  res.json({
-  name:"repustream-agent-"+id,
+  name:"repustream-agent-1",
   protocolVersion:"0.3.0",
   description:"Crypto analysis agent",
   skills:[
@@ -53,6 +46,11 @@ app.get("/a2a",(req,res)=>{
    {id:"analysis"}
   ]
  })
+})
+
+/* ROOT */
+app.get("/",(req,res)=>{
+ res.send("OK")
 })
 
 app.listen(PORT,()=>console.log("running "+PORT))
