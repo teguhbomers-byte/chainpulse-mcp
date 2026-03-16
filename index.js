@@ -27,46 +27,45 @@ function buildMCP(agent){
   methods:["GET","POST"],
 
   capabilities:{
-   tools:true,
-   prompts:true,
+
+   tools:[
+    {
+     name:"get_crypto_price",
+     description:"Get cryptocurrency price"
+    },
+    {
+     name:"get_market_overview",
+     description:"Analyze crypto market overview"
+    },
+    {
+     name:"get_trending_coins",
+     description:"List trending cryptocurrencies"
+    },
+    {
+     name:"get_top_coins",
+     description:"Top market cap coins"
+    },
+    {
+     name:"get_coin_info",
+     description:"Detailed coin data"
+    },
+    {
+     name:"get_defi_stats",
+     description:"DeFi ecosystem statistics"
+    },
+    {
+     name:"get_market_sentiment",
+     description:"Crypto market sentiment index"
+    }
+   ],
+
+   prompts:[
+    "market_briefing",
+    "coin_analysis"
+   ],
+
    resources:true
   },
-
-  tools:[
-   {
-    name:"get_crypto_price",
-    description:"Get cryptocurrency price"
-   },
-   {
-    name:"get_market_overview",
-    description:"Analyze crypto market overview"
-   },
-   {
-    name:"get_trending_coins",
-    description:"List trending cryptocurrencies"
-   },
-   {
-    name:"get_top_coins",
-    description:"Top market cap coins"
-   },
-   {
-    name:"get_coin_info",
-    description:"Detailed coin data"
-   },
-   {
-    name:"get_defi_stats",
-    description:"DeFi ecosystem statistics"
-   },
-   {
-    name:"get_market_sentiment",
-    description:"Crypto market sentiment index"
-   }
-  ],
-
-  prompts:[
-   "market_briefing",
-   "coin_analysis"
-  ],
 
   status:"healthy"
 
@@ -229,7 +228,5 @@ app.get("/",(req,res)=>{
 ========================= */
 
 app.listen(PORT,()=>{
-
  console.log("MCP + Tools + A2A server running")
-
 })
