@@ -7,166 +7,93 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// MCP Builder – format tools/prompts lebih mirip spec MCP yang sering dipakai (tambah type & parameters)
-function buildMCP(agentName = "chainpulse-agent") {
+// MCP metadata sederhana (persis seperti contoh aman)
+function getMCPMetadata(agentName = "repustream-agent-1001") {
   return {
     name: agentName,
-    description: "CoinGecko-powered crypto market analysis MCP agent",
     version: "1.0.0",
     protocolVersion: "2025-06-18",
+    description: "CoinGecko-powered crypto market analysis MCP agent",
     transport: "streamable-http",
     methods: ["POST"],
-    defaultInputModes: ["text", "json"],
-    defaultOutputModes: ["text", "json"],
     capabilities: {
       tools: true,
       prompts: true,
       resources: true
     },
     tools: [
-      {
-        type: "function",
-        function: {
-          name: "get_crypto_price",
-          description: "Get current USD price and 24h change for cryptocurrencies",
-          parameters: {
-            type: "object",
-            properties: { coin: { type: "string", description: "Coin symbol, e.g. bitcoin" } },
-            required: ["coin"]
-          }
-        }
-      },
-      {
-        type: "function",
-        function: {
-          name: "get_market_overview",
-          description: "Global crypto market stats including cap, BTC dominance",
-          parameters: { type: "object", properties: {} }
-        }
-      },
-      {
-        type: "function",
-        function: {
-          name: "get_trending_coins",
-          description: "Top trending coins in last 24h",
-          parameters: { type: "object", properties: {} }
-        }
-      },
-      {
-        type: "function",
-        function: {
-          name: "get_top_coins",
-          description: "Top coins by market cap",
-          parameters: { type: "object", properties: {} }
-        }
-      },
-      {
-        type: "function",
-        function: {
-          name: "get_coin_info",
-          description: "Detailed info: ATH, supply, links",
-          parameters: {
-            type: "object",
-            properties: { coin: { type: "string" } },
-            required: ["coin"]
-          }
-        }
-      },
-      {
-        type: "function",
-        function: {
-          name: "get_defi_stats",
-          description: "DeFi market cap, dominance, top coins",
-          parameters: { type: "object", properties: {} }
-        }
-      }
+      "get_crypto_price",
+      "get_market_overview",
+      "get_trending_coins",
+      "get_top_coins",
+      "get_coin_info",
+      "get_defi_stats"
     ],
     prompts: [
-      {
-        name: "market_briefing",
-        description: "Generate concise crypto market briefing using live data"
-      },
-      {
-        name: "coin_analysis",
-        description: "Produce structured analysis of a specific coin"
-      }
+      "market_briefing",
+      "coin_analysis"
     ],
-    resources: true,
     status: "healthy"
   };
 }
 
-// A2A Builder – pastiin 4 skills nested
-function buildA2A(agentName = "chainpulse-agent") {
+// Endpoint MCP (path /mcp/:agent, seperti contoh aman)
+app.get("/mcp/:agent", (req, res) => {
+  res.json(getMCPMetadata(req.params.agent));
+});
+
+// Root fallback ke MCP default (kalau platform nyoba root)
+app.get("/", (req, res) => {
+  res.json(getMCPMetadata());
+});
+
+// A2A metadata detail (persis seperti .well-known/agent-card.json di contoh)
+function getA2AMetadata(agentName = "RepuStream agent-1001") {
   return {
     name: agentName,
-    protocolVersion: "0.3.0",
-    description: "Crypto analysis agent with A2A capabilities",
-    defaultInputModes: ["text", "json"],
-    defaultOutputModes: ["json"],
+    description: "CoinGecko-powered crypto market analysis agent. Provides real-time price data, market overviews, trending coins, DeFi statistics, and detailed coin analysis.",
+    url: `https://chainpulse-mcp-production.up.railway.app/mcp/${agentName.toLowerCase().replace(/\s+/g, '-')}`,
+    version: "1.0.0",
+    capabilities: {
+      tools: [
+        { name: "get_crypto_price", description: "Get the current USD price and 24h change for one or more cryptocurrencies." },
+        { name: "get_market_overview", description: "Get global crypto market stats: total market cap, BTC dominance, active coins." },
+        { name: "get_trending_coins", description: "Get the top trending cryptocurrencies on CoinGecko in the last 24 hours." },
+        { name: "get_top_coins", description: "Get top coins ranked by market cap with price, volume, and 24h change." },
+        { name: "get_coin_info", description: "Get detailed information about a specific coin: description, links, ATH, supply." },
+        { name: "get_defi_stats", description: "Get DeFi market statistics: total DeFi market cap and DeFi dominance." }
+      ],
+      prompts: [
+        { name: "market_briefing", description: "Generate a concise crypto market briefing using live CoinGecko data." },
+        { name: "coin_analysis", description: "Produce a structured analysis of a specific coin using its live metrics." }
+      ]
+    },
+    defaultInputModes: ["text"],
+    defaultOutputModes: ["text"],
     skills: [
-      {
-        type: "function",
-        function: {
-          name: "crypto-overview",
-          description: "Global crypto market overview"
-        }
-      },
-      {
-        type: "function",
-        function: {
-          name: "trending",
-          description: "Top trending coins"
-        }
-      },
-      {
-        type: "function",
-        function: {
-          name: "defi",
-          description: "DeFi ecosystem stats"
-        }
-      },
-      {
-        type: "function",
-        function: {
-          name: "analysis",
-          description: "Detailed coin analysis"
-        }
-      }
-    ],
-    status: "active"
+      { id: "crypto-price", name: "Crypto Price Lookup", description: "Get current USD price and 24h change for cryptocurrencies" },
+      { id: "market-overview", name: "Market Overview", description: "Global crypto market stats including market cap and dominance" },
+      { id: "trending", name: "Trending Coins", description: "Top trending cryptocurrencies in the last 24 hours" },
+      { id: "defi-stats", name: "DeFi Statistics", description: "DeFi market cap, dominance, and top DeFi coins" },
+      { id: "coin-analysis", name: "Coin Analysis", description: "Detailed coin info including ATH, supply, and market data" }
+    ]
   };
 }
 
-// Route utama + fallback biar nggak 404
-app.get(["/", "/mcp"], (req, res) => {
-  res.json(buildMCP());
+// Endpoint A2A (path /agents/:agent/.well-known/agent-card.json, persis contoh aman)
+app.get("/agents/:agent/.well-known/agent-card.json", (req, res) => {
+  res.json(getA2AMetadata(req.params.agent));
 });
 
-// Dynamic agent
-app.get("/:agent/mcp", (req, res) => {
-  res.json(buildMCP(req.params.agent));
-});
-
-// A2A global & per agent
-app.get("/a2a", (req, res) => {
-  res.json(buildA2A());
-});
-
-app.get("/:agent/a2a", (req, res) => {
-  res.json(buildA2A(req.params.agent));
-});
-
-// POST MCP tool call (biar bisa execute kalau dibutuhin)
-app.post("/mcp", (req, res) => {
+// POST MCP tool call (minimal, biar bisa execute kalau dibutuhin)
+app.post("/mcp/:agent", (req, res) => {
   res.json({
     status: "success",
-    message: "Tool call processed",
-    result: "Ready!"
+    message: "Tool call received and processed"
   });
 });
 
-// Health
+// Health check
 app.get("/health", (req, res) => {
   res.json({ status: "healthy" });
 });
