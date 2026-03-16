@@ -7,8 +7,8 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// MCP metadata sederhana (persis seperti contoh aman)
-function getMCPMetadata(agentName = "repustream-agent-1001") {
+// MCP metadata – persis seperti contoh aman (tools & prompts array string)
+function getMCP(agentName = "repustream-agent-1001") {
   return {
     name: agentName,
     version: "1.0.0",
@@ -37,18 +37,18 @@ function getMCPMetadata(agentName = "repustream-agent-1001") {
   };
 }
 
-// Endpoint MCP (path /mcp/:agent, seperti contoh aman)
+// Endpoint MCP persis seperti contoh: /mcp/:agent
 app.get("/mcp/:agent", (req, res) => {
-  res.json(getMCPMetadata(req.params.agent));
+  res.json(getMCP(req.params.agent));
 });
 
-// Root fallback ke MCP default (kalau platform nyoba root)
+// Fallback root kalau di-test root
 app.get("/", (req, res) => {
-  res.json(getMCPMetadata());
+  res.json(getMCP());
 });
 
-// A2A metadata detail (persis seperti .well-known/agent-card.json di contoh)
-function getA2AMetadata(agentName = "RepuStream agent-1001") {
+// A2A metadata – persis seperti .well-known/agent-card.json
+function getAgentCard(agentName = "RepuStream agent-1001") {
   return {
     name: agentName,
     description: "CoinGecko-powered crypto market analysis agent. Provides real-time price data, market overviews, trending coins, DeFi statistics, and detailed coin analysis.",
@@ -80,20 +80,17 @@ function getA2AMetadata(agentName = "RepuStream agent-1001") {
   };
 }
 
-// Endpoint A2A (path /agents/:agent/.well-known/agent-card.json, persis contoh aman)
+// Endpoint A2A persis: /agents/:agent/.well-known/agent-card.json
 app.get("/agents/:agent/.well-known/agent-card.json", (req, res) => {
-  res.json(getA2AMetadata(req.params.agent));
+  res.json(getAgentCard(req.params.agent));
 });
 
-// POST MCP tool call (minimal, biar bisa execute kalau dibutuhin)
+// POST MCP tool call (minimal)
 app.post("/mcp/:agent", (req, res) => {
-  res.json({
-    status: "success",
-    message: "Tool call received and processed"
-  });
+  res.json({ status: "success", message: "Tool call processed" });
 });
 
-// Health check
+// Health
 app.get("/health", (req, res) => {
   res.json({ status: "healthy" });
 });
