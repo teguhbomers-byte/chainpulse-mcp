@@ -127,12 +127,33 @@ app.get("/:agent/a2a",(req,res)=>{
 
   protocolVersion:"0.3.0",
 
-  description:"Agent to agent communication endpoint",
+  description:"Multi-agent collaboration endpoint",
+
+  defaultInputModes:["text"],
+
+  defaultOutputModes:["text"],
 
   skills:[
-   "agent_collaboration",
-   "task_execution",
-   "data_exchange"
+   {
+    id:"crypto-overview",
+    name:"Crypto Overview",
+    description:"Get market overview including market cap and trends"
+   },
+   {
+    id:"trending-coins",
+    name:"Trending Coins",
+    description:"Top trending cryptocurrencies in last 24h"
+   },
+   {
+    id:"defi-stats",
+    name:"DeFi Statistics",
+    description:"DeFi market cap, TVL, and ecosystem data"
+   },
+   {
+    id:"coin-analysis",
+    name:"Coin Analysis",
+    description:"Detailed token data including price, ATH, supply"
+   }
   ],
 
   status:"active"
