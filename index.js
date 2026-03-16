@@ -18,11 +18,14 @@ app.get("/:agent/mcp",(req,res)=>{
 
   name:agent,
   version:"1.0.0",
+
   protocolVersion:"2025-06-18",
-  description:"Multi-agent MCP server running on Railway",
+
+  description:"CoinGecko-powered crypto market analysis MCP agent",
 
   transport:"streamable-http",
-  methods:["GET","POST"],
+
+  methods:["POST"],
 
   capabilities:{
    tools:true,
@@ -31,46 +34,21 @@ app.get("/:agent/mcp",(req,res)=>{
   },
 
   tools:[
-   {
-    name:"get_crypto_price",
-    description:"Get cryptocurrency price"
-   },
-   {
-    name:"get_market_overview",
-    description:"Analyze crypto market overview"
-   },
-   {
-    name:"get_trending_coins",
-    description:"List trending cryptocurrencies"
-   },
-   {
-    name:"get_top_coins",
-    description:"Top coins by market cap"
-   },
-   {
-    name:"get_coin_info",
-    description:"Detailed information about a coin"
-   },
-   {
-    name:"get_defi_stats",
-    description:"DeFi ecosystem statistics"
-   }
+   "get_crypto_price",
+   "get_market_overview",
+   "get_trending_coins",
+   "get_top_coins",
+   "get_coin_info",
+   "get_defi_stats"
   ],
 
   prompts:[
-   {
-    name:"market_briefing",
-    description:"Generate crypto market briefing"
-   },
-   {
-    name:"coin_analysis",
-    description:"Deep token analysis"
-   }
+   "market_briefing",
+   "coin_analysis"
   ],
 
-  resources:[],
-
   status:"healthy"
+
  })
 
 })
@@ -135,7 +113,7 @@ app.post("/:agent/tools",(req,res)=>{
 
 
 /* =========================
-   A2A COMMUNICATION
+   A2A ENDPOINT
 ========================= */
 
 app.post("/:agent/a2a",(req,res)=>{
@@ -145,8 +123,7 @@ app.post("/:agent/a2a",(req,res)=>{
  res.json({
   agent:agent,
   status:"active",
-  response:"A2A communication successful",
-  message:"Agent ready for collaboration"
+  response:"A2A communication successful"
  })
 
 })
@@ -158,6 +135,6 @@ app.post("/:agent/a2a",(req,res)=>{
 
 app.listen(PORT,()=>{
 
- console.log("MCP + Tools + A2A server running")
+ console.log("MCP + Tools + A2A running")
 
 })
