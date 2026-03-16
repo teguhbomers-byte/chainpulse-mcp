@@ -15,59 +15,35 @@ function buildMCP(agent){
 
  return {
 
-  name: agent,
+  name:agent,
 
-  description: "CoinGecko-powered crypto market analysis agent",
+  description:"CoinGecko-powered crypto market analysis agent",
 
-  protocolVersion: "2025-06-18",
+  protocolVersion:"2025-06-18",
 
-  transport: "streamable-http",
+  transport:"streamable-http",
 
-  methods: ["GET","POST"],
+  methods:["GET","POST"],
 
-  defaultInputModes: ["text"],
+  defaultInputModes:["text"],
 
-  defaultOutputModes: ["text"],
+  defaultOutputModes:["text"],
 
-  tools: [
-   {
-    id: "get_crypto_price",
-    name: "Get Crypto Price",
-    description: "Get real-time cryptocurrency price"
-   },
-   {
-    id: "get_market_overview",
-    name: "Market Overview",
-    description: "Get global crypto market stats"
-   },
-   {
-    id: "get_trending_coins",
-    name: "Trending Coins",
-    description: "Top trending cryptocurrencies"
-   },
-   {
-    id: "get_top_coins",
-    name: "Top Coins",
-    description: "Largest market cap coins"
-   },
-   {
-    id: "get_coin_info",
-    name: "Coin Info",
-    description: "Detailed information about a coin"
-   },
-   {
-    id: "get_defi_stats",
-    name: "DeFi Stats",
-    description: "DeFi market statistics"
-   }
+  tools:[
+   {id:"get_crypto_price",name:"Get Crypto Price",description:"Get cryptocurrency price"},
+   {id:"get_market_overview",name:"Market Overview",description:"Crypto market overview"},
+   {id:"get_trending_coins",name:"Trending Coins",description:"Trending cryptocurrencies"},
+   {id:"get_top_coins",name:"Top Coins",description:"Largest market cap coins"},
+   {id:"get_coin_info",name:"Coin Info",description:"Detailed coin information"},
+   {id:"get_defi_stats",name:"DeFi Stats",description:"DeFi market statistics"}
   ],
 
-  prompts: [
+  prompts:[
    "market_briefing",
    "coin_analysis"
   ],
 
-  status: "healthy"
+  status:"healthy"
 
  }
 
@@ -78,57 +54,8 @@ function buildMCP(agent){
    MCP ENDPOINT
 ========================= */
 
-app.get("/mcp",(req,res)=>{
- res.json(buildMCP("chainpulse-agent"))
-})
-
 app.get("/:agent/mcp",(req,res)=>{
  res.json(buildMCP(req.params.agent))
-})
-
-app.post("/mcp",(req,res)=>{
- res.json(buildMCP("chainpulse-agent"))
-})
-
-app.post("/:agent/mcp",(req,res)=>{
- res.json(buildMCP(req.params.agent))
-})
-
-
-/* =========================
-   TOOL EXECUTION
-========================= */
-
-app.post("/:agent/tools",(req,res)=>{
-
- const tool = req.body.tool
-
- if(tool === "get_crypto_price"){
-  return res.json({price:"$68000"})
- }
-
- if(tool === "get_market_overview"){
-  return res.json({market:"bullish"})
- }
-
- if(tool === "get_trending_coins"){
-  return res.json({coins:["BTC","ETH","SOL"]})
- }
-
- if(tool === "get_top_coins"){
-  return res.json({coins:["BTC","ETH","BNB"]})
- }
-
- if(tool === "get_coin_info"){
-  return res.json({coin:"BTC",marketCap:"1.2T"})
- }
-
- if(tool === "get_defi_stats"){
-  return res.json({tvl:"$95B"})
- }
-
- res.json({error:"Unknown tool"})
-
 })
 
 
@@ -140,37 +67,21 @@ function buildA2A(agent){
 
  return {
 
-  name: agent,
+  name:agent,
 
-  protocolVersion: "0.3.0",
+  protocolVersion:"0.3.0",
 
-  description: "Crypto analysis agent",
+  description:"Crypto analysis agent",
 
-  defaultInputModes: ["text"],
+  defaultInputModes:["text"],
 
-  defaultOutputModes: ["text"],
+  defaultOutputModes:["text"],
 
-  skills: [
-   {
-    id:"crypto-overview",
-    name:"Crypto Overview",
-    description:"Global crypto market overview"
-   },
-   {
-    id:"trending",
-    name:"Trending Coins",
-    description:"Top trending coins"
-   },
-   {
-    id:"defi",
-    name:"DeFi Statistics",
-    description:"DeFi ecosystem stats"
-   },
-   {
-    id:"analysis",
-    name:"Coin Analysis",
-    description:"Detailed coin analysis"
-   }
+  skills:[
+   {id:"crypto-overview",name:"Crypto Overview",description:"Global crypto market overview"},
+   {id:"trending",name:"Trending Coins",description:"Top trending coins"},
+   {id:"defi",name:"DeFi Statistics",description:"DeFi ecosystem stats"},
+   {id:"analysis",name:"Coin Analysis",description:"Detailed coin analysis"}
   ],
 
   status:"active"
@@ -184,20 +95,8 @@ function buildA2A(agent){
    A2A ENDPOINT
 ========================= */
 
-app.get("/a2a",(req,res)=>{
- res.json(buildA2A("chainpulse-agent"))
-})
-
 app.get("/:agent/a2a",(req,res)=>{
  res.json(buildA2A(req.params.agent))
-})
-
-app.post("/:agent/a2a",(req,res)=>{
- res.json({
-  agent:req.params.agent,
-  received:req.body,
-  response:"A2A communication successful"
- })
 })
 
 
@@ -210,12 +109,6 @@ app.get("/",(req,res)=>{
 })
 
 
-/* =========================
-   START SERVER
-========================= */
-
 app.listen(PORT,()=>{
-
- console.log("ChainPulse MCP server running on port " + PORT)
-
+ console.log("Server running on port "+PORT)
 })
