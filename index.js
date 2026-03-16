@@ -3,13 +3,13 @@ const app = express()
 
 const PORT = process.env.PORT || 3000
 
-function mcp(agent){
+function buildMCP(agentId){
  return {
-  name: agent,
-  version: "1.0.0",
-  protocolVersion: "2025-06-18",
-  description: "CoinGecko-powered crypto market analysis MCP agent",
-  transport: "streamable-http",
+  name:"repustream-agent-"+agentId,
+  version:"1.0.0",
+  protocolVersion:"2025-06-18",
+  description:"CoinGecko-powered crypto market analysis MCP agent",
+  transport:"streamable-http",
   methods:["POST"],
   capabilities:{
    tools:true,
@@ -33,34 +33,34 @@ function mcp(agent){
 }
 
 /* MCP */
-app.get("/mcp",(req,res)=>res.json(mcp("chainpulse-agent")))
-app.get("/agent-:id/mcp",(req,res)=>res.json(mcp("chainpulse-agent-"+req.params.id)))
+app.get("/agent-:id/mcp",(req,res)=>{
+ const id = req.params.id
+ res.json(buildMCP(id))
+})
 
 /* A2A */
-app.get("/a2a",(req,res)=>{
- res.json({
-  name:"chainpulse-agent",
-  protocolVersion:"0.3.0",
-  skills:[
-   {id:"crypto-overview"},
-   {id:"trending"},
-   {id:"defi"},
-   {id:"analysis"}
-  ]
- })
-})
-
 app.get("/agent-:id/a2a",(req,res)=>{
+ const id = req.params.id
  res.json({
-  name:"chainpulse-agent-"+req.params.id,
+  name:"repustream-agent-"+id,
   protocolVersion:"0.3.0",
+  description:"Crypto analysis agent",
+  defaultInputModes:["text"],
+  defaultOutputModes:["text"],
   skills:[
-   {id:"crypto-overview"},
-   {id:"trending"},
-   {id:"defi"},
-   {id:"analysis"}
-  ]
+   {id:"crypto-overview",name:"Crypto Overview"},
+   {id:"trending",name:"Trending Coins"},
+   {id:"defi",name:"DeFi Statistics"},
+   {id:"analysis",name:"Coin Analysis"}
+  ],
+  status:"active"
  })
 })
 
-app.listen(PORT,()=>console.log("server running "+PORT))
+app.get("/",(req,res)=>{
+ res.json({status:"server running"})
+})
+
+app.listen(PORT,()=>{
+ console.log("server running on "+PORT)
+})
