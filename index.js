@@ -1,46 +1,39 @@
-import express from "express"
+import express from "express";
 
-const app = express()
+const app = express();
+const PORT = process.env.PORT || 3000;
 
-app.use(express.json())
+app.get("/health", (req,res)=>{
+  res.json({status:"ok"});
+});
 
-app.get("/", (req,res)=>{
-  res.send("MCP server running")
-})
+app.get("/mcp",(req,res)=>{
+  res.json({
+    name:"chainpulse-agent",
+    version:"1.0.0",
+    protocolVersion:"2025-06-18",
+    description:"AI blockchain analytics agent",
+    transport:"streamable-http",
+    methods:["POST"],
+    capabilities:{
+      tools:true,
+      prompts:true,
+      resources:true
+    },
+    tools:[
+      "get_wallet_risk",
+      "analyze_token",
+      "detect_scam",
+      "chain_activity"
+    ],
+    prompts:[
+      "wallet_analysis",
+      "token_risk_report"
+    ],
+    status:"healthy"
+  });
+});
 
-app.get("/health",(req,res)=>{
-  res.json({status:"ok"})
-})
-
-app.post("/mcp",(req,res)=>{
-
-res.json({
-"name":"chainpulse-mcp",
-"version":"1.0.0",
-"protocolVersion":"2025-06-18",
-"description":"Crypto analysis MCP agent",
-"transport":"streamable-http",
-"methods":["POST"],
-"capabilities":{
-"tools":true,
-"prompts":true,
-"resources":true
-},
-"tools":[
-"get_crypto_price",
-"get_market_overview",
-"get_trending_coins",
-"get_top_coins"
-],
-"prompts":[
-"market_briefing",
-"coin_analysis"
-],
-"status":"healthy"
-})
-
-})
-
-app.listen(process.env.PORT || 3000, ()=>{
-console.log("MCP running")
-})
+app.listen(PORT,()=>{
+  console.log("MCP running");
+});
