@@ -1,5 +1,4 @@
 const express = require("express")
-
 const app = express()
 
 const PORT = process.env.PORT || 3000
@@ -25,39 +24,62 @@ function buildMCP(agent){
 
   transport: "streamable-http",
 
-  methods: ["GET","POST"],
-
-  defaultInputModes: ["text"],
-
-  defaultOutputModes: ["text"],
+  methods: ["POST"],
 
   tools: [
 
-   { id:"get_crypto_price", name:"Get Crypto Price", description:"Get real-time cryptocurrency price" },
+   {
+    name: "get_crypto_price",
+    description: "Get current USD price and 24h change for cryptocurrency",
+    inputSchema:{
+     type:"object",
+     properties:{
+      coin:{type:"string"}
+     }
+    }
+   },
 
-   { id:"get_market_overview", name:"Market Overview", description:"Analyze crypto market overview" },
+   {
+    name: "get_market_overview",
+    description: "Get global crypto market statistics"
+   },
 
-   { id:"get_trending_coins", name:"Trending Coins", description:"List trending cryptocurrencies" },
+   {
+    name: "get_trending_coins",
+    description: "Get top trending cryptocurrencies on CoinGecko"
+   },
 
-   { id:"get_top_coins", name:"Top Coins", description:"Top market cap coins" },
+   {
+    name: "get_top_coins",
+    description: "Get top coins ranked by market cap"
+   },
 
-   { id:"get_coin_info", name:"Coin Info", description:"Detailed coin data" },
+   {
+    name: "get_coin_info",
+    description: "Get detailed information about specific coin"
+   },
 
-   { id:"get_defi_stats", name:"DeFi Stats", description:"DeFi ecosystem statistics" }
+   {
+    name: "get_defi_stats",
+    description: "Get DeFi market statistics"
+   }
 
   ],
 
-  prompts: [
-
-   "market_briefing",
-
-   "coin_analysis"
-
+  prompts:[
+   {
+    name:"market_briefing",
+    description:"Generate crypto market briefing"
+   },
+   {
+    name:"coin_analysis",
+    description:"Analyze crypto coin fundamentals"
+   }
   ],
 
-  resources: [],
+  resources:[],
 
-  status: "healthy"
+  status:"healthy"
 
  }
 
@@ -65,22 +87,14 @@ function buildMCP(agent){
 
 
 /* =========================
-   MCP ENDPOINTS
+   MCP ENDPOINT
 ========================= */
 
 app.get("/mcp",(req,res)=>{
  res.json(buildMCP("chainpulse-agent"))
 })
 
-app.post("/mcp",(req,res)=>{
- res.json(buildMCP("chainpulse-agent"))
-})
-
 app.get("/:agent/mcp",(req,res)=>{
- res.json(buildMCP(req.params.agent))
-})
-
-app.post("/:agent/mcp",(req,res)=>{
  res.json(buildMCP(req.params.agent))
 })
 
@@ -93,29 +107,41 @@ function buildA2A(agent){
 
  return {
 
-  name: agent,
+  name:agent,
 
-  protocolVersion: "0.3.0",
+  protocolVersion:"0.3.0",
 
-  description: "Crypto analysis agent",
+  description:"Crypto analysis agent",
 
-  defaultInputModes: ["text"],
+  skills:[
 
-  defaultOutputModes: ["text"],
+   {
+    id:"crypto-overview",
+    name:"Crypto Overview",
+    description:"Global crypto market overview"
+   },
 
-  skills: [
+   {
+    id:"trending",
+    name:"Trending Coins",
+    description:"Top trending cryptocurrencies"
+   },
 
-   { id:"crypto-overview", name:"Crypto Overview", description:"Global crypto market overview" },
+   {
+    id:"defi",
+    name:"DeFi Statistics",
+    description:"DeFi ecosystem statistics"
+   },
 
-   { id:"trending", name:"Trending Coins", description:"Top trending cryptocurrencies" },
-
-   { id:"defi", name:"DeFi Statistics", description:"DeFi market statistics" },
-
-   { id:"analysis", name:"Coin Analysis", description:"Detailed coin analysis" }
+   {
+    id:"analysis",
+    name:"Coin Analysis",
+    description:"Detailed token analysis"
+   }
 
   ],
 
-  status: "active"
+  status:"active"
 
  }
 
@@ -123,7 +149,7 @@ function buildA2A(agent){
 
 
 /* =========================
-   A2A ENDPOINTS
+   A2A ENDPOINT
 ========================= */
 
 app.get("/a2a",(req,res)=>{
@@ -134,30 +160,16 @@ app.get("/:agent/a2a",(req,res)=>{
  res.json(buildA2A(req.params.agent))
 })
 
-app.post("/:agent/a2a",(req,res)=>{
- res.json({
-  agent: req.params.agent,
-  status: "active",
-  response: "A2A communication successful"
- })
-})
-
 
 /* =========================
    ROOT
 ========================= */
 
 app.get("/",(req,res)=>{
- res.json({status:"ChainPulse MCP server running"})
+ res.json({status:"ChainPulse MCP running"})
 })
 
 
-/* =========================
-   START SERVER
-========================= */
-
 app.listen(PORT,()=>{
-
- console.log("ChainPulse MCP server running on port " + PORT)
-
+ console.log("Server running on port "+PORT)
 })
