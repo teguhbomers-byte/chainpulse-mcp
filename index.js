@@ -1,70 +1,73 @@
 const express = require("express")
+
 const app = express()
-const port = process.env.PORT || 3000
+
+const PORT = process.env.PORT || 3000
 
 app.use(express.json())
 
+
 /* =========================
-   MCP AGENT INFO
+   MCP BUILDER
 ========================= */
 
 function buildMCP(agent){
 
  return {
 
-  name:agent,
+  name: agent,
 
-  description:"CoinGecko-powered crypto market analysis agent",
+  description: "CoinGecko-powered crypto market analysis agent",
 
-  protocolVersion:"2025-06-18",
+  protocolVersion: "2025-06-18",
 
-  transport:"streamable-http",
+  transport: "streamable-http",
 
-  methods:["POST"],
+  methods: ["GET","POST"],
 
-  defaultInputModes:["text"],
+  defaultInputModes: ["text"],
 
-  defaultOutputModes:["text"],
+  defaultOutputModes: ["text"],
 
-  tools:[
+  tools: [
    {
-    id:"get_crypto_price",
-    name:"Get Crypto Price",
-    description:"Get real-time cryptocurrency price"
+    id: "get_crypto_price",
+    name: "Get Crypto Price",
+    description: "Get real-time cryptocurrency price"
    },
    {
-    id:"get_market_overview",
-    name:"Market Overview",
-    description:"Get global crypto market stats"
+    id: "get_market_overview",
+    name: "Market Overview",
+    description: "Get global crypto market stats"
    },
    {
-    id:"get_trending_coins",
-    name:"Trending Coins",
-    description:"Top trending cryptocurrencies"
+    id: "get_trending_coins",
+    name: "Trending Coins",
+    description: "Top trending cryptocurrencies"
    },
    {
-    id:"get_top_coins",
-    name:"Top Coins",
-    description:"Largest market cap coins"
+    id: "get_top_coins",
+    name: "Top Coins",
+    description: "Largest market cap coins"
    },
    {
-    id:"get_coin_info",
-    name:"Coin Info",
-    description:"Detailed information about a coin"
+    id: "get_coin_info",
+    name: "Coin Info",
+    description: "Detailed information about a coin"
    },
    {
-    id:"get_defi_stats",
-    name:"DeFi Stats",
-    description:"DeFi market statistics"
+    id: "get_defi_stats",
+    name: "DeFi Stats",
+    description: "DeFi market statistics"
    }
   ],
 
-  prompts:[
+  prompts: [
    "market_briefing",
    "coin_analysis"
   ],
 
-  status:"healthy"
+  status: "healthy"
 
  }
 
@@ -100,27 +103,27 @@ app.post("/:agent/tools",(req,res)=>{
 
  const tool = req.body.tool
 
- if(tool==="get_crypto_price"){
+ if(tool === "get_crypto_price"){
   return res.json({price:"$68000"})
  }
 
- if(tool==="get_market_overview"){
+ if(tool === "get_market_overview"){
   return res.json({market:"bullish"})
  }
 
- if(tool==="get_trending_coins"){
+ if(tool === "get_trending_coins"){
   return res.json({coins:["BTC","ETH","SOL"]})
  }
 
- if(tool==="get_top_coins"){
+ if(tool === "get_top_coins"){
   return res.json({coins:["BTC","ETH","BNB"]})
  }
 
- if(tool==="get_coin_info"){
+ if(tool === "get_coin_info"){
   return res.json({coin:"BTC",marketCap:"1.2T"})
  }
 
- if(tool==="get_defi_stats"){
+ if(tool === "get_defi_stats"){
   return res.json({tvl:"$95B"})
  }
 
@@ -130,24 +133,24 @@ app.post("/:agent/tools",(req,res)=>{
 
 
 /* =========================
-   A2A
+   A2A BUILDER
 ========================= */
 
 function buildA2A(agent){
 
  return {
 
-  name:agent,
+  name: agent,
 
-  protocolVersion:"0.3.0",
+  protocolVersion: "0.3.0",
 
-  description:"Crypto analysis agent",
+  description: "Crypto analysis agent",
 
-  defaultInputModes:["text"],
+  defaultInputModes: ["text"],
 
-  defaultOutputModes:["text"],
+  defaultOutputModes: ["text"],
 
-  skills:[
+  skills: [
    {
     id:"crypto-overview",
     name:"Crypto Overview",
@@ -176,6 +179,11 @@ function buildA2A(agent){
 
 }
 
+
+/* =========================
+   A2A ENDPOINT
+========================= */
+
 app.get("/a2a",(req,res)=>{
  res.json(buildA2A("chainpulse-agent"))
 })
@@ -202,6 +210,12 @@ app.get("/",(req,res)=>{
 })
 
 
-app.listen(port,()=>{
- console.log(`ChainPulse MCP running on ${port}`)
+/* =========================
+   START SERVER
+========================= */
+
+app.listen(PORT,()=>{
+
+ console.log("ChainPulse MCP server running on port " + PORT)
+
 })
