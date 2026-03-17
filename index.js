@@ -168,13 +168,55 @@ app.all("/mcp/:id",(req,res)=>{
 
 /* ================= A2A ================= */
 app.get("/agents/:id/.well-known/agent-card.json",(req,res)=>{
+ const id = req.params.id
+ const clean = cleanId(id)
+
  res.json({
-  name:`ChainPulse ${cleanId(req.params.id)}`,
+  name:`ChainPulse ${clean}`,
+  description:"Advanced AI agent for crypto, automation, and intelligence",
+  url:`https://chainpulse-mcp-production.up.railway.app/agents/${id}`,
   version:"0.3.0",
-  description:"Crypto AI agent",
-  url:`https://chainpulse-mcp-production.up.railway.app/agents/${req.params.id}`,
+
   defaultInputModes:["text"],
-  defaultOutputModes:["text"]
+  defaultOutputModes:["text"],
+
+  skills:[
+   {
+    id:"chat",
+    name:"Chat Assistant",
+    description:"Conversational AI for user interaction",
+    tags:["chat","ai"]
+   },
+   {
+    id:"crypto_analysis",
+    name:"Crypto Analysis",
+    description:"Analyze tokens, trends, and market data",
+    tags:["crypto","analysis","trading"]
+   },
+   {
+    id:"market_insight",
+    name:"Market Insight",
+    description:"Generate insights and predictions",
+    tags:["market","insight"]
+   },
+   {
+    id:"defi_tools",
+    name:"DeFi Tools",
+    description:"Access DeFi analytics and stats",
+    tags:["defi","onchain"]
+   }
+  ],
+
+  capabilities:{
+   streaming:false,
+   pushNotifications:false,
+   stateTransitionHistory:false
+  },
+
+  provider:{
+   organization:"ChainPulse",
+   url:"https://chainpulse.app"
+  }
  })
 })
 
