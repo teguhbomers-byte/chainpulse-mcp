@@ -57,6 +57,10 @@ app.get("/mcp/:id",(req,res)=>{
  res.json(buildMCP(req.params.id))
 })
 
+app.post("/mcp/:id",(req,res)=>{
+ res.json(buildMCP(req.params.id))
+})
+
 /* ================= A2A ================= */
 function buildA2A(id){
  const clean = cleanId(id)
