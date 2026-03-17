@@ -3,13 +3,20 @@ const app = express()
 
 const PORT = process.env.PORT || 3000
 
+/* helper ambil angka dari agent-1 */
+function cleanId(id){
+ return id.replace("agent-","")
+}
+
 /* ================= MCP ================= */
 function buildMCP(id){
+ const clean = cleanId(id)
+
  return {
-  name:`chainpulse-${id}`,
+  name:`chainpulse-${clean}`,
   version:"1.0.0",
   protocolVersion:"2025-06-18",
-  description:`ChainPulse MCP agent ${id}`,
+  description:`ChainPulse MCP agent ${clean}`,
   transport:"streamable-http",
   methods:["POST"],
 
@@ -46,7 +53,7 @@ function buildMCP(id){
  }
 }
 
-/* MCP ROUTE (MEERKAT STYLE) */
+/* MCP ROUTE */
 app.get("/mcp/:id",(req,res)=>{
  res.json(buildMCP(req.params.id))
 })
@@ -54,8 +61,10 @@ app.get("/mcp/:id",(req,res)=>{
 
 /* ================= A2A ================= */
 function buildA2A(id){
+ const clean = cleanId(id)
+
  return {
-  name:`ChainPulse ${id}`,
+  name:`ChainPulse ${clean}`,
   description:"Advanced AI agent for crypto, automation, and intelligence",
   url:`https://chainpulse-mcp-production.up.railway.app/agents/${id}`,
   version:"1.0.0",
@@ -115,7 +124,7 @@ function buildA2A(id){
  }
 }
 
-/* A2A ROUTE (WAJIB FORMAT INI) */
+/* A2A ROUTE */
 app.get("/agents/:id/.well-known/agent-card.json",(req,res)=>{
  res.json(buildA2A(req.params.id))
 })
@@ -125,7 +134,6 @@ app.get("/agents/:id/.well-known/agent-card.json",(req,res)=>{
 app.get("/",(req,res)=>{
  res.send("ChainPulse MCP + A2A running")
 })
-
 
 app.listen(PORT,()=>{
  console.log("Server running on "+PORT)
