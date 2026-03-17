@@ -1,5 +1,6 @@
 const express = require("express")
 const app = express()
+app.use(express.json()) // WAJIB
 
 const PORT = process.env.PORT || 3000
 
@@ -22,99 +23,149 @@ function cleanId(id){
  return id.replace("agent-","")
 }
 
-/* ================= MCP ================= */
-function buildMCP(id){
- const clean = cleanId(id)
-
- return {
-  name:`chainpulse-${clean}`,
-  version:"2025-06-18",
-  protocolVersion:"2025-06-18",
-  description:`ChainPulse MCP agent ${clean}`,
-  transport:"http",
-  methods:["POST"],
-
-  capabilities:{
-   tools:true,
-   prompts:true,
-   resources:true
+/* ================= MCP DATA ================= */
+function buildTools(){
+ return [
+  {
+   name:"chat",
+   description:"Conversational AI",
+   parameters:{
+    type:"object",
+    properties:{
+     message:{type:"string"}
+    },
+    required:["message"]
+   }
   },
-
-  tools:[
- {
-  name:"chat",
-  description:"Conversational AI assistant",
-  inputSchema:{
-   type:"object",
-   properties:{
-    message:{type:"string"}
-   },
-   required:["message"]
+  {
+   name:"get_crypto_price",
+   description:"Get crypto price",
+   parameters:{
+    type:"object",
+    properties:{
+     symbol:{type:"string"}
+    },
+    required:["symbol"]
+   }
   }
- },
- {
-  name:"get_crypto_price",
-  description:"Get latest crypto price",
-  inputSchema:{
-   type:"object",
-   properties:{
-    symbol:{type:"string"}
-   },
-   required:["symbol"]
-  }
- }
-],
+ ]
+}
 
-prompts:[
- {
-  name:"greeting",
-  description:"Basic greeting prompt"
- },
- {
-  name:"help",
-  description:"Show available commands"
- }
-],
+function buildPrompts(){
+ return [
+  { name:"greeting", description:"Say hello" },
+  { name:"help", description:"Show help" }
+ ]
+}
 
-  status:"healthy"
+function buildCapabilities(){
+ return {
+  tools:{},
+  prompts:{},
+  resources:{}
  }
 }
 
-app.get("/mcp/:id",(req,res)=>{
- res.json(buildMCP(req.params.id))
-})
+/* ================= MCP ENDPOINT ================= */
+app.all("/mcp/:id",(req,res)=>{
+ const id = req.params.id
 
-app.post("/mcp/:id",(req,res)=>{
- res.json(buildMCP(req.params.id))
+ if (!wallets[id]) {
+  return res.status(404).json({ error:"Agent not found" })
+ }
+
+ // GET = discovery
+ if (req.method === "GET"){
+  return res.json({
+   name:`chainpulse-${cleanId(id)}`,
+   version:"2025-06-18",
+   protocolVersion:"2025-06-18",
+   transport:"http",
+   methods:["POST"],
+   capabilities: buildCapabilities()
+  })
+ }
+
+ // POST = JSON-RPC
+ const body = req.body
+
+ if (!body || body.jsonrpc !== "2.0"){
+  return res.json({
+   jsonrpc:"2.0",
+   error:{ code:-32600, message:"Invalid Request" },
+   id:null
+  })
+ }
+
+ let result = null
+
+ switch(body.method){
+
+  case "initialize":
+   result = {
+    capabilities: buildCapabilities(),
+    serverVersion:"2025-06-18"
+   }
+   break
+
+  case "tools/list":
+   result = buildTools()
+   break
+
+  case "prompts/list":
+   result = buildPrompts()
+   break
+
+  case "resources/list":
+   result = []
+   break
+
+  case "tools/call":
+   const name = body.params?.name
+
+   if (name === "chat"){
+    result = { reply:"Hello from ChainPulse 🚀" }
+   }
+   else if (name === "get_crypto_price"){
+    result = { price:99999 }
+   }
+   else{
+    return res.json({
+     jsonrpc:"2.0",
+     error:{ code:-32601, message:"Method not found" },
+     id:body.id
+    })
+   }
+   break
+
+  default:
+   return res.json({
+    jsonrpc:"2.0",
+    error:{ code:-32601, message:"Method not found" },
+    id:body.id
+   })
+ }
+
+ return res.json({
+  jsonrpc:"2.0",
+  result,
+  id:body.id
+ })
 })
 
 /* ================= A2A ================= */
 function buildA2A(id){
- const clean = cleanId(id)
-
  return {
-  name:`ChainPulse ${clean}`,
-  description:"Advanced AI agent for crypto, automation, and intelligence",
+  name:`ChainPulse ${cleanId(id)}`,
+  description:"Advanced AI agent for crypto",
   url:`https://chainpulse-mcp-production.up.railway.app/agents/${id}`,
   version:"0.3.0",
-
   defaultInputModes:["text"],
   defaultOutputModes:["text"],
-
-  authentication:{
-   schemes:["x402"],
-   description:"Optional micropayment"
-  },
-
   skills:[
    {id:"chatbot",name:"Chatbot"},
-   {id:"crypto",name:"Crypto Analysis"},
-   {id:"analysis",name:"Data Analysis"}
-  ],
-
-  capabilities:{
-   streaming:false
-  }
+   {id:"crypto",name:"Crypto Analysis"}
+  ]
  }
 }
 
@@ -122,18 +173,17 @@ app.get("/agents/:id/.well-known/agent-card.json",(req,res)=>{
  res.json(buildA2A(req.params.id))
 })
 
-/* ================= INDEX AUTO ================= */
+/* ================= INDEX ================= */
 app.get("/agent/:id",(req,res)=>{
  const id = req.params.id
 
- if (!wallets[id]) {
-  return res.status(400).json({ error: "Wallet not found for " + id })
+ if (!wallets[id]){
+  return res.status(400).json({ error:"Wallet not found" })
  }
 
  return res.json({
   type:"https://eips.ethereum.org/EIPS/eip-8004#registration-v1",
   active:true,
-
   services:[
    {
     name:"MCP",
@@ -148,21 +198,19 @@ app.get("/agent/:id",(req,res)=>{
     transport:"http"
    }
   ],
-
   registrations:[
    {
     address: wallets[id],
     chainId:8453
    }
   ],
-
   supportedTrust:["basic"]
  })
 })
 
 /* ================= ROOT ================= */
 app.get("/",(req,res)=>{
- res.send("ChainPulse mapping ready")
+ res.send("ChainPulse MCP READY 🚀")
 })
 
 app.listen(PORT,()=>{
