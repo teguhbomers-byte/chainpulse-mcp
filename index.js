@@ -131,6 +131,12 @@ function buildPrompts(){
  }
 }
 
+function buildResources(){
+ return {
+  resources:[]
+ }
+}
+
 /* ================= MCP ================= */
 app.all("/mcp/:id",(req,res)=>{
  const id = req.params.id
@@ -260,6 +266,46 @@ app.get("/agents/:id/.well-known/agent-card.json",(req,res)=>{
    organization:"ChainPulse",
    url:"https://chainpulse.app"
   }
+ })
+})
+
+/* ================= AGENT METADATA ================= */
+app.get("/agent/:id",(req,res)=>{
+ const id = req.params.id
+
+ if (!wallets[id]){
+  return res.status(400).json({ error:"Wallet not found" })
+ }
+
+ return res.json({
+  type:"https://eips.ethereum.org/EIPS/eip-8004#registration-v1",
+  name:`ChainPulse ${cleanId(id)}`,
+  description:"Autonomous crypto AI agent for analysis and insights",
+  active:true,
+
+  services:[
+   {
+    name:"MCP",
+    version:"2025-06-18",
+    endpoint:`https://chainpulse-mcp-production.up.railway.app/mcp/${id}`,
+    transport:"http"
+   },
+   {
+    name:"A2A",
+    version:"0.3.0",
+    endpoint:`https://chainpulse-mcp-production.up.railway.app/agents/${id}/.well-known/agent-card.json`,
+    transport:"http"
+   }
+  ],
+
+  registrations:[
+   {
+    agentId: parseInt(cleanId(id)),
+    agentRegistry:`eip155:8453:${wallets[id]}`
+   }
+  ],
+
+  supportedTrust:["basic"]
  })
 })
 
