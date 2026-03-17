@@ -62,82 +62,7 @@ function buildMCP(id){
    },
    required:["symbol"]
   }
- },
- {
-  name:"get_wallet_balance",
-  description:"Check wallet balance",
-  inputSchema:{
-   type:"object",
-   properties:{
-    address:{type:"string"}
-   },
-   required:["address"]
-  }
- },
- {
-  name:"get_gas_price",
-  description:"Get current gas price",
-  inputSchema:{
-   type:"object",
-   properties:{}
-  }
- },
- {
-  name:"search_web",
-  description:"Search information from internet",
-  inputSchema:{
-   type:"object",
-   properties:{
-    query:{type:"string"}
-   },
-   required:["query"]
-  }
- },
- {
-  name:"get_token_info",
-  description:"Get token details",
-  inputSchema:{
-   type:"object",
-   properties:{
-    contract:{type:"string"}
-   },
-   required:["contract"]
-  }
- },
- {
-  name:"get_trending_tokens",
-  description:"Get trending crypto tokens",
-  inputSchema:{
-   type:"object",
-   properties:{}
-  }
- },
- {
-  name:"get_portfolio",
-  description:"Analyze crypto portfolio",
-  inputSchema:{
-   type:"object",
-   properties:{
-    address:{type:"string"}
-   },
-   required:["address"]
-  }
- },
- {
-  name:"get_defi_stats",
-  description:"Get DeFi statistics",
-  inputSchema:{
-   type:"object",
-   properties:{}
-  }
- },
- {
-  name:"get_market_overview",
-  description:"Get overall crypto market data",
-  inputSchema:{
-   type:"object",
-   properties:{}
-  }
+ }
 ],
 
 prompts:[
@@ -148,14 +73,6 @@ prompts:[
  {
   name:"help",
   description:"Show available commands"
- },
- {
-  name:"analysis",
-  description:"Analyze crypto project or token"
- },
- {
-  name:"report",
-  description:"Generate crypto market report"
  }
 ],
 
