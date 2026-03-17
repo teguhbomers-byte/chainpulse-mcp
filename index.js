@@ -37,24 +37,79 @@ function buildTools(){
   tools:[
    {
     name:"chat",
-    description:"Conversational AI",
+    description:"Conversational AI assistant",
     inputSchema:{
      type:"object",
-     properties:{
-      message:{type:"string"}
-     },
+     properties:{ message:{type:"string"} },
      required:["message"]
     }
    },
    {
     name:"get_crypto_price",
-    description:"Get crypto price",
+    description:"Get latest crypto price",
+    inputSchema:{
+     type:"object",
+     properties:{ symbol:{type:"string"} },
+     required:["symbol"]
+    }
+   },
+   {
+    name:"get_trending_tokens",
+    description:"Get trending tokens in market",
+    inputSchema:{ type:"object", properties:{} }
+   },
+   {
+    name:"analyze_project",
+    description:"Analyze crypto project potential",
+    inputSchema:{
+     type:"object",
+     properties:{ project:{type:"string"} },
+     required:["project"]
+    }
+   },
+   {
+    name:"wallet_analysis",
+    description:"Analyze wallet activity",
+    inputSchema:{
+     type:"object",
+     properties:{ address:{type:"string"} },
+     required:["address"]
+    }
+   },
+   {
+    name:"gas_tracker",
+    description:"Track current gas fees",
+    inputSchema:{ type:"object", properties:{} }
+   },
+   {
+    name:"token_security_check",
+    description:"Check token contract safety",
+    inputSchema:{
+     type:"object",
+     properties:{ contract:{type:"string"} },
+     required:["contract"]
+    }
+   },
+   {
+    name:"swap_quote",
+    description:"Get token swap quote",
     inputSchema:{
      type:"object",
      properties:{
-      symbol:{type:"string"}
+      from:{type:"string"},
+      to:{type:"string"},
+      amount:{type:"number"}
      },
-     required:["symbol"]
+     required:["from","to","amount"]
+    }
+   },
+   {
+    name:"portfolio_overview",
+    description:"Get portfolio summary",
+    inputSchema:{
+     type:"object",
+     properties:{ address:{type:"string"} },
+     required:["address"]
     }
    }
   ]
@@ -64,14 +119,16 @@ function buildTools(){
 function buildPrompts(){
  return {
   prompts:[
-   { name:"greeting", description:"Say hello" },
-   { name:"help", description:"Show help" }
+   { name:"greeting", description:"Say hello to user" },
+   { name:"help", description:"Show available commands" },
+   { name:"analysis", description:"Analyze crypto project deeply" },
+   { name:"market_report", description:"Generate market report" },
+   { name:"bullish_signal", description:"Find bullish tokens" },
+   { name:"bearish_risk", description:"Detect risky tokens" },
+   { name:"portfolio_review", description:"Review portfolio" },
+   { name:"defi_strategy", description:"Suggest DeFi strategy" }
   ]
  }
-}
-
-function buildResources(){
- return { resources:[] }
 }
 
 /* ================= MCP ================= */
@@ -181,31 +238,17 @@ app.get("/agents/:id/.well-known/agent-card.json",(req,res)=>{
   defaultOutputModes:["text"],
 
   skills:[
-   {
-    id:"chat",
-    name:"Chat Assistant",
-    description:"Conversational AI for user interaction",
-    tags:["chat","ai"]
-   },
-   {
-    id:"crypto_analysis",
-    name:"Crypto Analysis",
-    description:"Analyze tokens, trends, and market data",
-    tags:["crypto","analysis","trading"]
-   },
-   {
-    id:"market_insight",
-    name:"Market Insight",
-    description:"Generate insights and predictions",
-    tags:["market","insight"]
-   },
-   {
-    id:"defi_tools",
-    name:"DeFi Tools",
-    description:"Access DeFi analytics and stats",
-    tags:["defi","onchain"]
-   }
-  ],
+ {id:"chat",name:"Chat AI",tags:["ai","chat"]},
+ {id:"crypto_analysis",name:"Crypto Analysis",tags:["crypto","analysis"]},
+ {id:"market_prediction",name:"Market Prediction",tags:["prediction","market"]},
+ {id:"wallet_tracking",name:"Wallet Tracking",tags:["wallet","onchain"]},
+ {id:"token_scanner",name:"Token Scanner",tags:["token","security"]},
+ {id:"defi_tools",name:"DeFi Tools",tags:["defi"]},
+ {id:"portfolio_manager",name:"Portfolio Manager",tags:["portfolio"]},
+ {id:"onchain_data",name:"On-chain Data",tags:["blockchain"]},
+ {id:"risk_detection",name:"Risk Detection",tags:["risk"]},
+ {id:"trend_analysis",name:"Trend Analysis",tags:["trend"]}
+],
 
   capabilities:{
    streaming:false,
