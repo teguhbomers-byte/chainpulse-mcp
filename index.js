@@ -299,11 +299,11 @@ app.get("/agent/:id",(req,res)=>{
   ],
 
   registrations:[
-   {
-    agentId: parseInt(cleanId(id)),
-    agentRegistry:`eip155:8453:${wallets[id]}`
-   }
-  ],
+ {
+  agentId: parseInt(cleanId(id)),
+  agentRegistry:"eip155:8453:0x1111111111111111111111111111111111111111"
+ }
+],
 
   supportedTrust:["basic"]
  })
